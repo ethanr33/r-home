@@ -17,7 +17,7 @@ import time
 SMTP_SERVER = 'smtp.gmail.com' 
 SMTP_PORT = 587 
 GMAIL_USERNAME = 'tsha813@gmail.com'
-GMAIL_PASSWORD = 'xtbtmlxzlkmvfqye'
+GMAIL_PASSWORD = '' #hidden for security ;)
 
 
 class Emailer:
