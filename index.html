@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta name="viewport" content="width=device-width, user-scalable=no">
+    <title>Smart Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  </head>
+  <body>
+    <h1 class="text-center mt-5">Smart Home 🏡</h1>
+
+    <style>
+
+	  body {
+		background-color: #F2F7FB;
+	  }
+	
+	  button 
+	  {
+        touch-action: manipulation;
+        
+      }
+	  #light_text 
+	  {
+		font-size: 36px;
+		color: red;
+      }
+	  #garage_text 
+	  {
+		font-size: 36px;
+		color: red;
+      }
+	  #door_text 
+	  {
+		font-size: 36px;
+		color: red;
+      }
+
+	  .box {
+		width: 28rem;
+	  }
+    </style>
+
+	<div class="d-flex flex-column align-items-center my-5">
+		<div class="box mb-5 bg-white p-4 rounded-4">
+			<h4 class="text-center mb-1">Lights 💡</h4>
+			<div id="light_text" class="text-center">Off</div>
+			<div class="mt-3 d-flex justify-content-evenly align-items-center">
+				<button type="button" class="btn btn-outline-primary btn-lg" id="on1">On</button>
+				<button id="off1" type="button" class="btn btn-primary btn-lg">Off</button>
+			</div>
+		</div>
+	
+		<div class="box mb-5 bg-white p-4 rounded-4">
+			<h4 class="text-center mb-1">Door Lock 🔒</h4>
+			<div id="door_text" class="text-center">Off</div>
+			<div class="mt-3 d-flex justify-content-evenly align-items-center">
+				<button type="button" class="btn btn-outline-primary btn-lg"  id="unlock1">Unlock</button>
+				<button type="button" class="btn btn-primary btn-lg" id="lock1">Lock</button>
+			</div>
+		</div>
+	
+	
+		<div class="box mb-5 bg-white p-4 rounded-4">
+			<h4 class="text-center mb-1">Garage Door 🚪</h4>
+			<div id="garage_text" class="text-center">Off</div>
+			<div class="mt-3 d-flex justify-content-evenly align-items-center">
+				<button  type="button" class="btn btn-outline-primary btn-lg" id="unlock2">Unlock</button>
+				<button class="btn btn-primary btn-lg" id="lock2">Lock</button>
+			</div>
+		</div>
+
+		<div class="box mb-5 bg-white p-4 rounded-4">
+			<h4 class="text-center mb-1">Temperature ❄️</h4>
+			<div class="d-flex justify-content-evenly">
+				<div class="mr-4">
+					<p class="fs-6">Actual Temperature:</p>
+					<div id="value" class="text-center t-0 mt-0 fs-5">75</div>
+				</div>
+				<div>
+					<p class="fs-6">Desired Temperature:</p>
+					<div id="value2" class="text-center pt-0 mt-0 fs-5">75</div>
+				</div>
+			</div>
+			<div class="mt-3 d-flex justify-content-around align-items-center">
+				<button class="btn btn-primary btn-lg px-4" id="increment"> Up</button>
+				<button class="btn btn-primary btn-lg" id="decrement">Down</button>
+			</div>
+		</div>
+
+		<div class="box bg-white p-4 rounded-4">
+			<h4 class="text-center mb-1">Send current status via email ✉️</h4>
+			<div class="mt-3 d-flex justify-content-evenly align-items-center">
+				<button type="button" class="btn btn-primary btn-lg" id="email_text">Email Me</button>
+			</div>
+		</div>
+	</div>
+
+
+    <script>
+		var url = 'http://192.168.1.10:5000/receive'
+		let actual_temp = 0;
+		let desired_temp = 75;
+		const valueElement = document.getElementById('value');
+		const textElement1 = document.getElementById('light_text');
+		const textElement2 = document.getElementById('door_text');
+		const textElement3 = document.getElementById('garage_text');
+		//temp sensor
+		function temp_up() 
+		{
+			desired_temp++;
+			valueElement.textContent = desired_temp;
+			fetch(url,{method: 'POST', body: JSON.stringify({direction: desired_temp})}).then(response => {
+          console.log('Response:', response);})
+		}
+
+		function temp_down() 
+		{
+			desired_temp--;
+			valueElement.textContent = desired_temp;
+			fetch(url,{method: 'POST', body: JSON.stringify({direction: desired_temp})}).then(response => {
+          console.log('Response:', response);})
+		}
+
+		document.getElementById('increment').addEventListener('click', temp_up);
+		document.getElementById('decrement').addEventListener('click', temp_down);
+
+		//light switch
+		document.getElementById("on1").addEventListener("click", function()
+		{
+			fetch(url,{method: 'POST', body: JSON.stringify({direction: 'on1'})}).then(response => {
+          console.log('Response:', response);})
+		  off1.classList.remove("btn-primary")
+		  off1.classList.add("btn-outline-primary")
+		  on1.classList.add("btn-primary")
+		  on1.classList.remove("btn-outline-primary")
+		  textElement1.style.color = 'green';
+          textElement1.textContent = 'On';
+
+		});
+		
+		document.getElementById("off1").addEventListener("click", function() 
+		{
+			fetch(url,{method: 'POST', body: JSON.stringify({direction: 'off1'})}).then(response => {
+          console.log('Response:', response);})
+		  textElement1.style.color = 'red';
+          textElement1.textContent = 'Off';
+		  off1.classList.add("btn-primary")
+		  off1.classList.remove("btn-outline-primary")
+		  on1.classList.remove("btn-primary")
+		  on1.classList.add("btn-outline-primary")
+		});
+
+		//door lock
+		document.getElementById("unlock1").addEventListener("click", function() 
+		{
+			fetch(url,{method: 'POST', body: JSON.stringify({direction: 'unlock1'})}).then(response => {
+          console.log('Response:', response);})
+		  textElement2.style.color = 'green';
+          textElement2.textContent = 'On';
+		  lock1.classList.remove("btn-primary")
+		  lock1.classList.add("btn-outline-primary")
+		  unlock1.classList.add("btn-primary")
+		  unlock1.classList.remove("btn-outline-primary")
+		});
+		
+		document.getElementById("lock1").addEventListener("click", function() 
+		{
+			fetch(url,{method: 'POST', body: JSON.stringify({direction: 'lock1'})}).then(response => {
+          console.log('Response:', response);})
+		  textElement2.style.color = 'red';
+          textElement2.textContent = 'Off';
+		  lock1.classList.add("btn-primary")
+		  lock1.classList.remove("btn-outline-primary")
+		  unlock1.classList.remove("btn-primary")
+		  unlock1.classList.add("btn-outline-primary")
+		});
+
+		//garage door
+		document.getElementById("unlock2").addEventListener("click", function() 
+		{
+			fetch(url,{method: 'POST', body: JSON.stringify({direction: 'unlock2'})}).then(response => {
+          console.log('Response:', response);})
+		  textElement3.style.color = 'green';
+          textElement3.textContent = 'On';
+		  lock2.classList.remove("btn-primary")
+		  lock2.classList.add("btn-outline-primary")
+		  unlock2.classList.add("btn-primary")
+		  unlock2.classList.remove("btn-outline-primary")
+		});
+		
+		document.getElementById("lock2").addEventListener("click", function() 
+		{
+			fetch(url,{method: 'POST', body: JSON.stringify({direction: 'lock2'})}).then(response => {
+          console.log('Response:', response);})
+		  textElement3.style.color = 'red';
+          textElement3.textContent = 'Off';
+		  lock2.classList.add("btn-primary")
+		  lock2.classList.remove("btn-outline-primary")
+		  unlock2.classList.remove("btn-primary")
+		  unlock2.classList.add("btn-outline-primary")
+		});
+
+		//email
+		//light switch
+		document.getElementById("email_text").addEventListener("click", function()
+			{
+				fetch(url,{method: 'POST', body: JSON.stringify({direction: 'email'})}).then(response => {
+			console.log('Response:', response);})
+			});
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+  </body>
+</html>
